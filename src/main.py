@@ -2,7 +2,7 @@ import discord
 import random
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.WARN)
 
 store = dict(
     cat1 = [],
@@ -22,6 +22,9 @@ def random_transform(inp: str):
     r = random.randint(0, 4)
     rc = random.randint(0, 3)
 
+    if inp == "":
+        return ""
+   
     input = inp
 
     if rc == 1:
@@ -94,7 +97,8 @@ async def generate(ctx: discord.ApplicationContext):
     try:
         gen = try_generate()
         if gen == "":
-            await ctx.respond("could not generate, try again", ephemeral=True)
+            await ctx.respond("could not generate, try again (usually caused by not enough data)", ephemeral=True)
+            logging.warn("empty message")
         else:
             await ctx.respond(gen)
     except Exception as e:
