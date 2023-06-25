@@ -53,12 +53,12 @@ async def on_message(msg: discord.Message):
         logging.debug("message storage END")
 
 @bot.slash_command()
-async def generate(ctx: discord.ApplicationContext, length: int = 10):
+async def generate(ctx: discord.ApplicationContext):
     await ctx.defer()
 
     logging.debug("START generation")
     try:
-        gen = generator.gen_core.try_generate(store, length)
+        gen = generator.gen_core.try_generate(store)
         if gen == "":
             await ctx.respond("could not generate, try again", ephemeral=True)
             logging.error("empty message")

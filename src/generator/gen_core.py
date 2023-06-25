@@ -3,13 +3,13 @@ import logging
 
 import generator.util
 
-def try_generate(store: dict, length: int = 10):
+def try_generate(store: dict):
     sc1from = int(abs(len(store["cat2"]) + len(store["cat3"])) / len(store["cat1"]))
-    sc1to = int(abs(len(store["cat2"]) + len(store["cat3"])) / random.randint(min(length, len(store["cat1"])), len(store["cat1"])))
+    sc1to = int(abs(len(store["cat2"]) + len(store["cat3"])) / random.randint(min(2, len(store["cat1"])), len(store["cat1"])))
     sc2from = int(abs(len(store["cat1"]) - len(store["cat3"])) / len(store["cat2"]))
-    sc2to = int(abs(len(store["cat1"]) - len(store["cat3"])) / random.randint(min(length, len(store["cat2"])), len(store["cat2"])))
+    sc2to = int(abs(len(store["cat1"]) - len(store["cat3"])) / random.randint(min(2, len(store["cat2"])), len(store["cat2"])))
     sc3from = int(abs(len(store["cat1"]) * len(store["cat2"])) / len(store["cat3"]))
-    sc3to = int(abs(len(store["cat1"]) * len(store["cat2"])) / random.randint(min(length, len(store["cat3"])), len(store["cat3"])))
+    sc3to = int(abs(len(store["cat1"]) * len(store["cat2"])) / random.randint(min(2, len(store["cat3"])), len(store["cat3"])))
 
     logging.debug(f"ranges: 1[{sc1from}:{sc1to}] 2[{sc2from}:{sc2to}] 3[{sc3from}:{sc3to}]")
     logging.debug(f"store: 1:{len(store['cat1'])} 2:{len(store['cat2'])} 3:{len(store['cat3'])}")
