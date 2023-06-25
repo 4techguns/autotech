@@ -1,7 +1,6 @@
 import discord
 import logging
 
-import generator.util
 import generator.gen_core
 
 logging.basicConfig(level=logging.WARN)
