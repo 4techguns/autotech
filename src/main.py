@@ -41,7 +41,9 @@ async def on_message(msg: discord.Message):
         cat2 = split[align1:align2]
         cat3 = split[align2:align3]
         
-        logging.debug(f"lost words: {len(split) - len(cat1 + cat2 + cat3)}")
+        logging.debug(f"c1[{len(store['cat1'])}w -> {len(store['cat1']) + len(cat1)}w]")
+        logging.debug(f"c2[{len(store['cat2'])}w -> {len(store['cat2']) + len(cat2)}w]")
+        logging.debug(f"c3[{len(store['cat3'])}w -> {len(store['cat3']) + len(cat3)}w]")
 
         store["cat1"] += cat1
         store["cat2"] += cat2
