@@ -28,7 +28,7 @@ def random_transform(inp: str):
     input = inp
 
     if rc == 1:
-        input = input.capitalize()
+        input = input.lower().capitalize()
     elif rc == 2:
         input = input.lower()
     elif rc == 3:
@@ -46,22 +46,36 @@ def random_transform(inp: str):
         return input + "..."
 
 def try_generate():
+    sc1from = int(abs(len(store["cat2"]) + len(store["cat3"])) / len(store["cat1"]))
+    sc1to = int(abs(len(store["cat2"]) + len(store["cat3"])) / random.randint(min(2, len(store["cat1"])), len(store["cat1"])))
+    sc2from = int(abs(len(store["cat1"]) - len(store["cat3"])) / len(store["cat2"]))
+    sc2to = int(abs(len(store["cat1"]) - len(store["cat3"])) / random.randint(min(2, len(store["cat2"])), len(store["cat2"])))
+    sc3from = int(abs(len(store["cat1"]) * len(store["cat2"])) / len(store["cat3"]))
+    sc3to = int(abs(len(store["cat1"]) * len(store["cat2"])) / random.randint(min(2, len(store["cat3"])), len(store["cat3"])))
+
+    if sc1from > sc1to:
+        logging.error("CAT1 RANGE IS INVALID! FROM > TO")
+    if sc2from > sc2to:
+        logging.error("CAT2 RANGE IS INVALID! FROM > TO")
+    if sc3from > sc3to:
+        logging.error("CAT3 RANGE IS INVALID! FROM > TO")
+
+    print("-ALIGNMENT-")
+    print("C1:", sc1from, "-", sc1to)
+    print("C2:", sc2from, "-", sc2to)
+    print("C3:", sc3from, "-", sc3to)
+
+
     sortedc1 = store["cat1"][
-        int(abs(len(store["cat2"]) + len(store["cat3"])) / len(store["cat1"]))
-        :
-        int(abs(len(store["cat2"]) + len(store["cat3"])) / random.randint(min(2, len(store["cat1"])), len(store["cat1"])))
+        sc1from:sc1to
     ]
 
     sortedc2 = store["cat2"][
-        int(abs(len(store["cat1"]) - len(store["cat3"])) / len(store["cat2"]))
-        :
-        int(abs(len(store["cat1"]) - len(store["cat3"])) / random.randint(min(2, len(store["cat2"])), len(store["cat2"])))
+        sc2from:sc2to
     ]
 
     sortedc3 = store["cat3"][
-        int(abs(len(store["cat1"]) * len(store["cat2"])) / len(store["cat3"]))
-        :
-        int(abs(len(store["cat1"]) * len(store["cat2"])) / random.randint(min(2, len(store["cat3"])), len(store["cat3"])))
+        sc3from:sc3to
     ]
 
     combined = sortedc1 + sortedc2 + sortedc3
@@ -97,7 +111,7 @@ async def generate(ctx: discord.ApplicationContext):
     try:
         gen = try_generate()
         if gen == "":
-            await ctx.respond("could not generate, try again (usually caused by not enough data)", ephemeral=True)
+            await ctx.respond("could not generate, try again", ephemeral=True)
             logging.warn("empty message")
         else:
             await ctx.respond(gen)
