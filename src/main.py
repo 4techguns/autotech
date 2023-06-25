@@ -13,6 +13,10 @@ store = dict(
     cat3 = []
 )
 
+logging.debug("load permastore START")
+store = extras.permastore.load()
+logging.debug("load permastore END")
+
 intents = discord.Intents.default()
 intents.message_content = True
 
