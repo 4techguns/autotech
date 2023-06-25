@@ -1,6 +1,8 @@
 import discord
-import random
 import logging
+
+import generator.util
+import generator.gen_core
 
 logging.basicConfig(level=logging.WARN)
 
@@ -14,75 +16,6 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 bot = discord.Bot(intents=intents)
-
-def clamp(n, smallest, largest): 
-    return max(smallest, min(n, largest))
-
-def random_transform(inp: str):
-    r = random.randint(0, 4)
-    rc = random.randint(0, 3)
-
-    if inp == "":
-        return ""
-   
-    input = inp
-
-    if rc == 1:
-        input = input.lower().capitalize()
-    elif rc == 2:
-        input = input.lower()
-    elif rc == 3:
-        input = input.upper()
-
-    if r == 0: # default
-        return input
-    elif r == 1: # period at end
-        return input + "."
-    elif r == 2: # exclamation at end
-        return input + "!"
-    elif r == 3: # questionmark at end
-        return input + "?"
-    elif r == 4: # ellipsis
-        return input + "..."
-
-def try_generate():
-    sc1from = int(abs(len(store["cat2"]) + len(store["cat3"])) / len(store["cat1"]))
-    sc1to = int(abs(len(store["cat2"]) + len(store["cat3"])) / random.randint(min(2, len(store["cat1"])), len(store["cat1"])))
-    sc2from = int(abs(len(store["cat1"]) - len(store["cat3"])) / len(store["cat2"]))
-    sc2to = int(abs(len(store["cat1"]) - len(store["cat3"])) / random.randint(min(2, len(store["cat2"])), len(store["cat2"])))
-    sc3from = int(abs(len(store["cat1"]) * len(store["cat2"])) / len(store["cat3"]))
-    sc3to = int(abs(len(store["cat1"]) * len(store["cat2"])) / random.randint(min(2, len(store["cat3"])), len(store["cat3"])))
-
-    if sc1from > sc1to:
-        logging.error("CAT1 RANGE IS INVALID! FROM > TO")
-    if sc2from > sc2to:
-        logging.error("CAT2 RANGE IS INVALID! FROM > TO")
-    if sc3from > sc3to:
-        logging.error("CAT3 RANGE IS INVALID! FROM > TO")
-
-    print("-ALIGNMENT-")
-    print("C1:", sc1from, "-", sc1to)
-    print("C2:", sc2from, "-", sc2to)
-    print("C3:", sc3from, "-", sc3to)
-
-
-    sortedc1 = store["cat1"][
-        sc1from:sc1to
-    ]
-
-    sortedc2 = store["cat2"][
-        sc2from:sc2to
-    ]
-
-    sortedc3 = store["cat3"][
-        sc3from:sc3to
-    ]
-
-    combined = sortedc1 + sortedc2 + sortedc3
-
-    final = str.join(" ", list(dict.fromkeys(combined)))
-
-    return random_transform(final)
 
 @bot.event
 async def on_message(msg: discord.Message):
@@ -109,7 +42,7 @@ async def generate(ctx: discord.ApplicationContext):
     await ctx.defer()
 
     try:
-        gen = try_generate()
+        gen = generator.gen_core.try_generate(store)
         if gen == "":
             await ctx.respond("could not generate, try again", ephemeral=True)
             logging.warn("empty message")
