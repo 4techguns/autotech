@@ -3,7 +3,8 @@ import logging
 
 import generator.gen_core
 
-logging.basicConfig(level=logging.WARN)
+logging.basicConfig(level=logging.DEBUG)
+logging.getLogger('discord').setLevel(logging.WARN)
 
 store = dict(
     cat1 = [],
@@ -34,21 +35,22 @@ async def on_message(msg: discord.Message):
         store["cat2"] += cat2
         store["cat3"] += cat3
 
-        print(store)
-
 @bot.slash_command()
 async def generate(ctx: discord.ApplicationContext):
     await ctx.defer()
 
+    logging.debug("START generation")
     try:
         gen = generator.gen_core.try_generate(store)
         if gen == "":
             await ctx.respond("could not generate, try again", ephemeral=True)
-            logging.warning("empty message")
+            logging.error("empty message")
         else:
             await ctx.respond(gen)
     except Exception as e:
         await ctx.respond(f"failed: {e}")
+        logging.error(f"FAILED!! {e}")
+    logging.debug("END generation")
 
 @bot.slash_command()
 async def dump(ctx: discord.ApplicationContext):
