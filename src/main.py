@@ -2,6 +2,7 @@ import discord
 import logging
 
 import generator.gen_core
+import extras.permastore
 
 logging.basicConfig(level=logging.DEBUG)
 logging.getLogger('discord').setLevel(logging.WARN)
@@ -20,6 +21,7 @@ bot = discord.Bot(intents=intents)
 @bot.event
 async def on_message(msg: discord.Message):
     if not msg.author.id == bot.user.id:
+        logging.debug("message storage BEGIN")
         split = msg.content.split(' ')
 
         align0 = int(len(split) * 0)
@@ -30,10 +32,17 @@ async def on_message(msg: discord.Message):
         cat1 = split[align0:align1]
         cat2 = split[align1:align2]
         cat3 = split[align2:align3]
+        
+        logging.debug(f"lost words: {len(split) - len(cat1 + cat2 + cat3)}")
 
         store["cat1"] += cat1
         store["cat2"] += cat2
         store["cat3"] += cat3
+
+        logging.debug("disk persist BEGIN")
+        extras.permastore.save(store)
+        logging.debug("disk persist END")
+        logging.debug("message storage END")
 
 @bot.slash_command()
 async def generate(ctx: discord.ApplicationContext):
@@ -55,12 +64,9 @@ async def generate(ctx: discord.ApplicationContext):
 @bot.slash_command()
 async def dump(ctx: discord.ApplicationContext):
     await ctx.defer()
-
-    with open("dump.json", "w") as file:
-        file.write(str(store))
     
-    with open("dump.json", "rb") as file:
-        await ctx.respond(file=discord.File(file, "dump.json"))
+    with open("store.json", "rb") as file:
+        await ctx.respond("WARNING: this is a temporary command and will not be there for long", file=discord.File(file, "store.json"))
 
 @bot.slash_command(description="Clears the bot's word memory")
 async def lobotomise(ctx: discord.ApplicationContext):
