@@ -69,25 +69,5 @@ async def generate(ctx: discord.ApplicationContext):
         logging.error(f"FAILED!! {e}")
     logging.debug("END generation")
 
-@bot.slash_command()
-async def dump(ctx: discord.ApplicationContext):
-    await ctx.defer()
-    
-    with open("store.json", "rb") as file:
-        await ctx.respond("WARNING: this is a temporary command and will not be there for long", file=discord.File(file, "store.json"))
-
-@bot.slash_command(description="Clears the bot's word memory")
-async def lobotomise(ctx: discord.ApplicationContext):
-    global store
-    await ctx.defer()
-
-    store = dict(
-        cat1 = [],
-        cat2 = [],
-        cat3 = []
-    )
-
-    await ctx.respond("ok")
-
 with open("token", "r") as file:
     bot.run(file.read())
