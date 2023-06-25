@@ -1,5 +1,6 @@
 import discord
 import logging
+import os
 
 import generator.gen_core
 import extras.permastore
@@ -13,9 +14,12 @@ store = dict(
     cat3 = []
 )
 
-logging.debug("load permastore START")
-store = extras.permastore.load()
-logging.debug("load permastore END")
+if os.path.exists("store.json"):
+    logging.debug("load permastore START")
+    store = extras.permastore.load()
+    logging.debug("load permastore END")
+else:
+    logging.warning("permastore loading skipped, no store.json file found")
 
 intents = discord.Intents.default()
 intents.message_content = True
