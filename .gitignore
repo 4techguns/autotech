@@ -1,2 +1,5 @@
 token
 dump.json
+
+__pycache__
+*.pyc
