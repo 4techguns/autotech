@@ -44,7 +44,7 @@ async def generate(ctx: discord.ApplicationContext):
         gen = generator.gen_core.try_generate(store)
         if gen == "":
             await ctx.respond("could not generate, try again", ephemeral=True)
-            logging.warn("empty message")
+            logging.warning("empty message")
         else:
             await ctx.respond(gen)
     except Exception as e:
