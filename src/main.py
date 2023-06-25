@@ -29,6 +29,23 @@ bot = discord.Bot(intents=intents)
 @bot.event
 async def on_message(msg: discord.Message):
     if not msg.author.id == bot.user.id:
+        if f"<@{bot.user.id}>" in msg.content:
+            logging.debug("ping generation trigger")
+            logging.debug("START generation")
+
+            msg.channel.trigger_typing()
+            
+            try:
+                gen = generator.gen_core.try_generate(store)
+                if gen == "":
+                    logging.error("empty message")
+                else:
+                    await msg.reply(gen)
+            except Exception as e:
+                logging.error(f"FAILED!! {e}")
+            logging.debug("END generation")
+
+
         logging.debug("message storage BEGIN")
         split = msg.content.split(' ')
 
