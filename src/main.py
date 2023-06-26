@@ -17,7 +17,7 @@ defaultstore = dict(
 
 if os.path.exists("store.json"):
     logging.debug("load permastore START")
-    store = extras.permastore.load()
+    gstore = extras.permastore.load()
     logging.debug("load permastore END")
 else:
     logging.warning("permastore loading skipped, no store.json file found")
