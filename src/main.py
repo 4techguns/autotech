@@ -9,11 +9,6 @@ logging.basicConfig(level=logging.DEBUG)
 logging.getLogger('discord').setLevel(logging.WARN)
 
 gstore = dict()
-defaultstore = dict(
-    cat1 = [],
-    cat2 = [],
-    cat3 = []
-)
 
 if os.path.exists("store.json"):
     logging.debug("load permastore START")
@@ -32,9 +27,11 @@ async def on_message(msg: discord.Message):
     if not msg.author.id == bot.user.id:
         if not msg.guild.id in gstore:
             logging.warning(f"no store for guild {msg.guild.id}; creating")
-            gstore[msg.guild.id] = defaultstore
-        
-        store = gstore[msg.guild.id]
+            gstore[msg.guild.id] = dict(
+                cat1 = [],
+                cat2 = [],
+                cat3 = []
+            )
 
         if f"<@{bot.user.id}>" in msg.content:
 
@@ -44,7 +41,7 @@ async def on_message(msg: discord.Message):
             msg.channel.trigger_typing()
 
             try:
-                gen = generator.gen_core.try_generate(store)
+                gen = generator.gen_core.try_generate(gstore[msg.guild.id])
                 if gen == "":
                     logging.error("empty message")
                 else:
@@ -66,13 +63,13 @@ async def on_message(msg: discord.Message):
         cat2 = split[align1:align2]
         cat3 = split[align2:align3]
         
-        logging.debug(f"c1[{len(store['cat1'])}w -> {len(store['cat1']) + len(cat1)}w]")
-        logging.debug(f"c2[{len(store['cat2'])}w -> {len(store['cat2']) + len(cat2)}w]")
-        logging.debug(f"c3[{len(store['cat3'])}w -> {len(store['cat3']) + len(cat3)}w]")
+        logging.debug(f"c1[{len(gstore[msg.guild.id]['cat1'])}w -> {len(gstore[msg.guild.id]['cat1']) + len(cat1)}w]")
+        logging.debug(f"c2[{len(gstore[msg.guild.id]['cat2'])}w -> {len(gstore[msg.guild.id]['cat2']) + len(cat2)}w]")
+        logging.debug(f"c3[{len(gstore[msg.guild.id]['cat3'])}w -> {len(gstore[msg.guild.id]['cat3']) + len(cat3)}w]")
 
-        store["cat1"] += cat1
-        store["cat2"] += cat2
-        store["cat3"] += cat3
+        gstore[msg.guild.id]["cat1"] += cat1
+        gstore[msg.guild.id]["cat2"] += cat2
+        gstore[msg.guild.id]["cat3"] += cat3
 
         logging.debug("disk persist BEGIN")
         extras.permastore.save(gstore)
@@ -83,11 +80,9 @@ async def on_message(msg: discord.Message):
 async def generate(ctx: discord.ApplicationContext):
     await ctx.defer()
 
-    store = gstore[ctx.guild.id]
-
     logging.debug("START generation")
     try:
-        gen = generator.gen_core.try_generate(store)
+        gen = generator.gen_core.try_generate(gstore[ctx.guild.id])
         if gen == "":
             await ctx.respond("could not generate, try again", ephemeral=True)
             logging.error("empty message")
