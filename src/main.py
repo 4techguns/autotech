@@ -93,5 +93,22 @@ async def generate(ctx: discord.ApplicationContext):
         logging.error(f"FAILED!! {e}")
     logging.debug("END generation")
 
+@bot.slash_command()
+async def generate_debug(ctx: discord.ApplicationContext):
+    await ctx.defer()
+
+    logging.debug("START generation")
+    try:
+        gen = generator.gen_core.try_generate_dbg(gstore[ctx.guild.id])
+        if gen == "":
+            await ctx.respond("could not generate, try again", ephemeral=True)
+            logging.error("empty message")
+        else:
+            await ctx.respond(gen)
+    except Exception as e:
+        await ctx.respond(f"failed: {e}")
+        logging.error(f"FAILED!! {e}")
+    logging.debug("END generation")
+
 with open("token", "r") as file:
     bot.run(file.read())
