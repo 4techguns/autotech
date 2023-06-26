@@ -8,7 +8,8 @@ import extras.permastore
 logging.basicConfig(level=logging.DEBUG)
 logging.getLogger('discord').setLevel(logging.WARN)
 
-store = dict(
+gstore = dict()
+defaultstore = dict(
     cat1 = [],
     cat2 = [],
     cat3 = []
@@ -29,12 +30,19 @@ bot = discord.Bot(intents=intents)
 @bot.event
 async def on_message(msg: discord.Message):
     if not msg.author.id == bot.user.id:
+        if not msg.guild.id in gstore:
+            logging.warning(f"no store for guild {msg.guild.id}; creating")
+            gstore[msg.guild.id] = defaultstore
+        
+        store = gstore[msg.guild.id]
+
         if f"<@{bot.user.id}>" in msg.content:
+
             logging.debug("ping generation trigger")
             logging.debug("START generation")
 
             msg.channel.trigger_typing()
-            
+
             try:
                 gen = generator.gen_core.try_generate(store)
                 if gen == "":
@@ -67,13 +75,15 @@ async def on_message(msg: discord.Message):
         store["cat3"] += cat3
 
         logging.debug("disk persist BEGIN")
-        extras.permastore.save(store)
+        extras.permastore.save(gstore)
         logging.debug("disk persist END")
         logging.debug("message storage END")
 
 @bot.slash_command()
 async def generate(ctx: discord.ApplicationContext):
     await ctx.defer()
+
+    store = gstore[ctx.guild.id]
 
     logging.debug("START generation")
     try:
